@@ -78,6 +78,7 @@ jobs:
         run: npm ci
 
       - name: Build desktop bundles
+        id: desktop-build
         uses: tauri-apps/tauri-action@v0.6.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -85,8 +86,31 @@ jobs:
           projectPath: .
           tauriScript: npm run tauri
           args: ${{ matrix.args }}
-          uploadWorkflowArtifacts: true
-          workflowArtifactNamePattern: ${{ matrix.artifact_name }}
+
+      - name: Prepare desktop artifact paths
+        id: desktop-artifacts
+        shell: bash
+        env:
+          ARTIFACT_PATHS: ${{ steps.desktop-build.outputs.artifactPaths }}
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const paths = JSON.parse(process.env.ARTIFACT_PATHS || '[]');
+          if (!paths.length) {
+            throw new Error('No desktop artifacts were reported by tauri-action.');
+          }
+          fs.appendFileSync(
+            process.env.GITHUB_OUTPUT,
+            `paths<<EOF\n${paths.join('\n')}\nEOF\n`,
+          );
+          NODE
+
+      - name: Upload desktop artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: ${{ steps.desktop-artifacts.outputs.paths }}
+          if-no-files-found: error
 
   android:
     name: Android
@@ -145,16 +169,16 @@ jobs:
         run: npm run tauri:android:init
 
       - name: Build Android bundles
-        uses: tauri-apps/tauri-action@v0.6.2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run tauri:android:build
+
+      - name: Upload Android artifacts
+        uses: actions/upload-artifact@v4
         with:
-          projectPath: .
-          tauriScript: npm run tauri
-          mobile: android
-          args: --apk --aab --split-per-abi
-          uploadWorkflowArtifacts: true
-          workflowArtifactNamePattern: android
+          name: android
+          path: |
+            src-tauri/gen/android/app/build/outputs/**/*.apk
+            src-tauri/gen/android/app/build/outputs/**/*.aab
+          if-no-files-found: error
 
   ios:
     name: iOS (unsigned)
@@ -195,13 +219,13 @@ jobs:
         run: npm run tauri:ios:init
 
       - name: Build unsigned iOS bundle
-        uses: tauri-apps/tauri-action@v0.6.2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run tauri:ios:build
+
+      - name: Upload unsigned iOS artifacts
+        uses: actions/upload-artifact@v4
         with:
-          projectPath: .
-          tauriScript: npm run tauri
-          mobile: ios
-          args: --no-sign
-          uploadWorkflowArtifacts: true
-          workflowArtifactNamePattern: ios-unsigned
+          name: ios-unsigned
+          path: |
+            src-tauri/gen/apple/build/**/*.ipa
+            src-tauri/gen/apple/build/**/*.app
+          if-no-files-found: error

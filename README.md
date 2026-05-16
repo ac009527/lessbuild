@@ -54,7 +54,7 @@ npm run tauri:ios:build
 
 ### Desktop
 
-桌面端使用 Tauri v2 官方 `tauri-action` 进行构建，并上传 workflow artifacts。
+桌面端使用 Tauri v2 官方 `tauri-action` 进行构建，再通过 `actions/upload-artifact` 上传构建产物。
 
 ### Android
 
@@ -65,6 +65,7 @@ Android job 会在 CI 中完成：
 - 安装 Rust Android targets
 - 执行 `tauri android init --ci`
 - 构建 `APK` 和 `AAB`
+- 上传 `APK` / `AAB` artifacts
 
 ### iOS
 
@@ -74,6 +75,7 @@ iOS job 会在 CI 中完成：
 - 安装 CocoaPods
 - 执行 `tauri ios init --ci`
 - 执行 `tauri ios build --no-sign`
+- 上传 unsigned iOS artifacts
 
 注意：
 
