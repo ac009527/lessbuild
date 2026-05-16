@@ -1,0 +1,26 @@
+{
+  "name": "lessbuild",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "tauri": "tauri",
+    "tauri:desktop:build": "tauri build --ci",
+    "tauri:android:init": "tauri android init --ci --skip-targets-install",
+    "tauri:android:build": "tauri android build --ci --apk --aab --split-per-abi",
+    "tauri:ios:init": "tauri ios init --ci --skip-targets-install",
+    "tauri:ios:build": "tauri ios build --ci --no-sign"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2",
+    "@tauri-apps/plugin-opener": "^2"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2",
+    "vite": "^6.0.3",
+    "typescript": "~5.6.2"
+  }
+}
