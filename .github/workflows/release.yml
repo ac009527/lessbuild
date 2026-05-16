@@ -78,7 +78,7 @@ jobs:
         run: npm ci
 
       - name: Build desktop bundles
-        uses: tauri-apps/tauri-action@v1
+        uses: tauri-apps/tauri-action@v0.6.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -145,7 +145,7 @@ jobs:
         run: npm run tauri:android:init
 
       - name: Build Android bundles
-        uses: tauri-apps/tauri-action@v1
+        uses: tauri-apps/tauri-action@v0.6.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -195,7 +195,7 @@ jobs:
         run: npm run tauri:ios:init
 
       - name: Build unsigned iOS bundle
-        uses: tauri-apps/tauri-action@v1
+        uses: tauri-apps/tauri-action@v0.6.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
